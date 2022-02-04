@@ -16,6 +16,7 @@
 #gradle output files
 **/output
 /.gradle/
+.gradle
 
 #Intellij Idea files
 *.iml
