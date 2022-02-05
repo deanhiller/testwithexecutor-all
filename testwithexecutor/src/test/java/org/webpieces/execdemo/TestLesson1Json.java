@@ -37,15 +37,17 @@ public class TestLesson1Json extends FeatureTest {
 		//move complex request building out of the test...
 		SearchRequest req = Requests.createSearchRequest();
 
+		//calling this will see that we schedule a runnable
+		SearchResponse resp = saveApi.search(req).get(5, TimeUnit.SECONDS);
+
+		Runnable cachedRunnable = mockExecutor.getCache().get(0);
+		//notice we now move the setup of the mockRemoteService to just before the Runnable is run
 		mockRemoteService.setSendDefaultRetValue(XFuture.completedFuture(new SendDataResponse()));
 
-		//always call the client api we test in the test method so developers can find what we test
-		//very easily.. (do not push this down behind a method as we have found it slows others down
-		//and is the whole key point of the test)
-		SearchResponse resp = saveApi.search(req).get(5, TimeUnit.SECONDS);
-		SearchResponse resp2 = saveApi.search(req).get(5, TimeUnit.SECONDS);
+		//let us simulate the thread pool but on the test thread
+		cachedRunnable.run();
 
-		validate(resp2);
+		validate(resp);
 	}
 
 	@Test
@@ -74,10 +76,7 @@ public class TestLesson1Json extends FeatureTest {
 		//next if you want, move assert logic into a validate method to re-use amongst tests
 		Assert.assertEquals("match1", resp.getMatches().get(0));
 
-		//check metrics are wired correctly here as well
-		RequiredSearch result = metrics.get("testCounter");
-		Counter counter = result.counter();
-		Assert.assertEquals(2.0, counter.count(), 0.1);
+		//deleted since we do not call search twice(that was testing metrics reporting)
 
 		//check the mock system was called with 6
 		List<SendDataRequest> params = mockRemoteService.getSendMethodParameters();

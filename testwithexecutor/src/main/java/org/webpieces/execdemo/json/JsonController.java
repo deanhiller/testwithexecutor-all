@@ -2,10 +2,12 @@ package org.webpieces.execdemo.json;
 
 import org.webpieces.util.futures.XFuture;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -35,12 +37,15 @@ public class JsonController implements SaveApi, ClientApi {
 	private static final Logger log = LoggerFactory.getLogger(JsonController.class);
 
 	private Counter counter;
-	private RemoteService remoteService;
+	private Executor executor;
+	private Provider<CallRemoteService> runnableProvider;
 
 	@Inject
-	public JsonController(MeterRegistry metrics, RemoteService remoteService) {
+	public JsonController(MeterRegistry metrics,
+						  Executor executor, Provider<CallRemoteService> runnableProvider) {
 		counter = metrics.counter("testCounter");
-		this.remoteService = remoteService;
+		this.executor = executor;
+		this.runnableProvider = runnableProvider;
 	}
 	
 	public XFuture<SearchResponse> asyncJsonRequest(int id, @Jackson SearchRequest request) {
@@ -110,11 +115,40 @@ public class JsonController implements SaveApi, ClientApi {
 	public XFuture<SearchResponse> search(@Jackson SearchRequest request) {
 		counter.increment();
 
-		//so we can test out mocking remote services
-		remoteService.sendData(new SendDataRequest(6)).join();
+		CallRemoteService runnable = runnableProvider.get();
+		runnable.setData(request);
+		executor.execute(runnable);
+
+		//we no longer call the remote service here as it takes too long and holds up clients
+		//so we throw it into a pool of threads instead so we don't have to wait.
 
 		SearchResponse resp = postJson(request);
 		return XFuture.completedFuture(resp);
+	}
+
+	private static class CallRemoteService implements Runnable {
+
+		private RemoteService remoteService;
+
+		//Sving request state in business classes is generally a no-no but Runnables
+		//are a bridge sometimes so in Runnables it is required
+		private SearchRequest request;
+
+		@Inject
+		public CallRemoteService(RemoteService remoteService) {
+			this.remoteService = remoteService;
+		}
+
+		public void setData(SearchRequest request) {
+			this.request = request;
+		}
+
+		@Override
+		public void run() {
+			//Now we call remoteService on a different thread in production here
+			//however if you step through the test, it is on the test thread!!
+			remoteService.sendData(new SendDataRequest(6)).join();
+		}
 	}
 
 	private static class RequestStreamEchoWriter implements StreamWriter, StreamRef {

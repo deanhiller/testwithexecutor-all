@@ -32,6 +32,9 @@ import org.webpieces.execdemo.web.login.BackendLoginImpl;
 import org.webpieces.execdemo.web.tags.MyHtmlTagCreator;
 
 import javax.inject.Singleton;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class GuiceModule implements Module {
 
@@ -73,6 +76,12 @@ public class GuiceModule implements Module {
 		binder.bind(HttpsConfig.class).toInstance(new HttpsConfig(true));
 
 		binder.bind(ClientAssertions.class).to(ClientAssertionsImpl.class).asEagerSingleton();
+
+		//create a threadpool of 10 threads for production
+		ExecutorService executorService = Executors.newFixedThreadPool(10);
+		//bind it to Executor so we can inject Executor anywhere
+		binder.bind(Executor.class).toInstance(executorService);
+
 	}
 
 	@Provides

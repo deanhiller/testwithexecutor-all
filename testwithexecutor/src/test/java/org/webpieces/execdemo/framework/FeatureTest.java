@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.webpieces.mock.lib.MockExecutor;
 import org.webpieces.util.context.Context;
 import org.webpieces.webserver.api.ServerConfig;
 import org.webpieces.execdemo.Server;
@@ -18,6 +19,7 @@ import org.webpieces.execdemo.service.RemoteService;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -35,6 +37,7 @@ public class FeatureTest extends CompanyTest {
     protected SaveApi saveApi;
     protected ExampleRestAPI exampleRestAPI;
     protected MockRemoteService mockRemoteService = new MockRemoteService();
+    protected SimpleMockExecutor mockExecutor = new SimpleMockExecutor();
     protected SimpleMeterRegistry metrics;
 
     @Before
@@ -67,6 +70,8 @@ public class FeatureTest extends CompanyTest {
         @Override
         public void configure(Binder binder) {
             binder.bind(RemoteService.class).toInstance(mockRemoteService);
+
+            binder.bind(Executor.class).toInstance(mockExecutor);
         }
     }
 
