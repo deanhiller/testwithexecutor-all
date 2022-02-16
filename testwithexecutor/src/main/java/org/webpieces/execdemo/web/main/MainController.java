@@ -51,6 +51,10 @@ public class MainController {
 		return Actions.renderThis(); 
 	}
 
+	public Action test() {
+		return Actions.renderThis();
+	}
+
 	public Action mySyncMethod() {
 		
 		GlobalAppContext ctx = (GlobalAppContext) Current.applicationContext();

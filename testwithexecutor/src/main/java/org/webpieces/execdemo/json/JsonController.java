@@ -96,7 +96,7 @@ public class JsonController implements SaveApi, ClientApi {
 	public SearchResponse throwNotFound(int id, @Jackson SearchRequest request) {
 		throw new NotFoundException("to test it out");
 	}
-	
+
 	//Method signature cannot have RequestContext since in microservices, we implement an api as the server
 	//AND a client implements the same api AND client does not have a RequestContext!!
 	@Override
@@ -109,6 +109,23 @@ public class JsonController implements SaveApi, ClientApi {
 		
 		XFuture<StreamWriter> responseWriter = handle.process(response);
 		return new RequestStreamEchoWriter(requestCtx, handle, responseWriter);
+	}
+
+	@Override
+	public XFuture<JsonAsyncResponse> jsonAsync(@Jackson JsonAsyncRequest request) {
+		JsonAsyncResponse resp = new JsonAsyncResponse();
+		resp.setSomething("prefix="+request.getQuery());
+		log.info("Sleeping for 5 seconds");
+//		try {
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e) {
+//			throw new RuntimeException("failed", e);
+//		}
+		if(request.getQuery().contains("request2"))
+			throw new RuntimeException("fail please");
+
+		log.info("done sleeping");
+		return XFuture.completedFuture(resp);
 	}
 
 	@Override

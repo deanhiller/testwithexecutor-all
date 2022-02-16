@@ -10,5 +10,7 @@ public interface SaveApi {
     @Path("/search/item")
     public XFuture<SearchResponse> search(SearchRequest request);
 
-
+    @POST
+    @Path("/json/await")
+    public XFuture<JsonAsyncResponse> jsonAsync(JsonAsyncRequest request);
 }

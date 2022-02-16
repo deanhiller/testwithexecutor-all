@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+    </head>
+
+    <body>
+    <p>Testing async behavior with fetch api</p>
+
+    <script>
+
+//https://docs.google.com/document/d/1TZb56r7scO6eW0dh8BhVOwz9erN_Wln4--D3PkBW48A/edit
+
+        function fetchText(data) {
+            return fetch('/json/await', {
+                method: "POST",
+                body: JSON.stringify(data)
+            })
+            .then(json => {
+                console.log("Request success");
+
+                throw new Error('Exception message Dean');
+
+                return json;
+            });
+            /*
+            .catch(err => {
+                //This is really bad....I cannot rethrow the catch after adding more info
+                //here
+                console.log('Request Failed', err)
+            }); // Catch errors
+            */
+        }
+
+        async function fetchAll() {
+            let data1 = {
+              query: "request1",
+            }
+            let data2 = {
+              query: "request2",
+            }
+
+            let response1 = await fetchText(data1);
+            let response2 = await fetchText(data2);
+
+            let resp1 = await response1.json();
+            let resp2 = await response2.json();
+            console.log("resp1="+resp1.something);
+            console.log(resp2);
+            return resp2;
+        }
+
+        function initialize_page()
+          {
+                fetchAll()
+                    .then(resp => alert( 'resp1'+resp.something));
+                    /*
+                    .catch(err => {
+                        console.log('Request Failed.  TOP LEVEL catch', err)
+                    }); // Catch errors
+                    */
+          }
+
+          window.onload=initialize_page;
+    </script>
+
+    <p>...After the script.</p>
+    </body>
+
+</html>
+

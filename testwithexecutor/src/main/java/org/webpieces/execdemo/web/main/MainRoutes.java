@@ -1,10 +1,8 @@
 package org.webpieces.execdemo.web.main;
 
 import static org.webpieces.ctx.api.HttpMethod.GET;
+import static org.webpieces.execdemo.web.main.MainRouteId.*;
 import static org.webpieces.router.api.routes.Port.BOTH;
-import static org.webpieces.execdemo.web.main.MainRouteId.ASYNC_ROUTE;
-import static org.webpieces.execdemo.web.main.MainRouteId.MAIN_ROUTE;
-import static org.webpieces.execdemo.web.main.MainRouteId.SYNC_ROUTE;
 
 import org.webpieces.router.api.routebldr.DomainRouteBuilder;
 import org.webpieces.router.api.routebldr.RouteBuilder;
@@ -25,6 +23,7 @@ public class MainRoutes implements Routes {
 		bldr.addRoute(BOTH, GET, "/sync",         "MainController.mySyncMethod", SYNC_ROUTE);
 		bldr.addRoute(BOTH, GET, "/async",         "MainController.myAsyncMethod", ASYNC_ROUTE); //for advanced users who want to release threads to do more work
 
+		 bldr.addRoute(BOTH, GET, "/test", "MainController.test", TEST_ROUTE);
 		bldr.addStaticDir(BOTH, "/assets/", "public/", false);
 		//Add a single file by itself(not really needed)
 		bldr.addStaticFile(BOTH, "/favicon.ico", "public/favicon.ico", false);
