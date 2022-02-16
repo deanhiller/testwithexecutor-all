@@ -50,7 +50,8 @@ dependencies {
 
   //for connection pooling: https://mvnrepository.com/artifact/org.hibernate/hibernate-hikaricp
   implementation deps['hikari-cp']
- 
+    implementation deps['jwt']
+
   //IF you add dependencies on other projects locally, you need to modify TestWithExecutorDevServer.java to include those
   //SOURCE paths(ie. *.java file paths not *.class files)) or it will not recompile that code as it changes
 

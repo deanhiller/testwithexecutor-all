@@ -4,6 +4,11 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.webpieces.execdemo.example.publicjson.AuthApi;
+import org.webpieces.execdemo.example.publicjson.AuthController;
+import org.webpieces.execdemo.example.secure.ExampleApi;
+import org.webpieces.execdemo.example.secure.ExampleJsonController;
+import org.webpieces.execdemo.example.secure.JsonAuthFilters;
 import org.webpieces.microsvc.server.api.RESTApiRoutes;
 import org.webpieces.plugin.backend.BackendPlugin;
 import org.webpieces.plugin.hibernate.HibernatePlugin;
@@ -64,6 +69,11 @@ public class ProdServerMeta implements WebAppMeta {
 	@Override
     public List<Routes> getRouteModules() {
 		return Lists.newArrayList(
+				new RESTApiRoutes(ExampleApi.class, ExampleJsonController.class),
+				new RESTApiRoutes(AuthApi.class, AuthController.class),
+				new JsonAuthFilters(),
+
+
 				new RESTApiRoutes(SaveApi.class, JsonController.class),
 				new RESTApiRoutes(ExampleRestAPI.class, JsonRESTController.class),
 				new MainRoutes(),

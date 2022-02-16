@@ -23,7 +23,10 @@ public class MainRoutes implements Routes {
 		bldr.addRoute(BOTH, GET, "/sync",         "MainController.mySyncMethod", SYNC_ROUTE);
 		bldr.addRoute(BOTH, GET, "/async",         "MainController.myAsyncMethod", ASYNC_ROUTE); //for advanced users who want to release threads to do more work
 
-		 bldr.addRoute(BOTH, GET, "/test", "MainController.test", TEST_ROUTE);
+		bldr.addRoute(BOTH, GET, "/test", "MainController.test", TEST_ROUTE);
+		bldr.addRoute(BOTH, GET, "/react", "MainController.react", REACT_ROUTE);
+
+
 		bldr.addStaticDir(BOTH, "/assets/", "public/", false);
 		//Add a single file by itself(not really needed)
 		bldr.addStaticFile(BOTH, "/favicon.ico", "public/favicon.ico", false);
